@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  flask-app:
+    build: .
+    container_name: flask-lb
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SERVICE_MODE=lb
+      - BACKEND_SERVERS=http://backend1:5000,http://backend2:5000,http://backend3:5000
+    depends_on:
+      - backend1
+      - backend2
+      - backend3
+    restart: unless-stopped
+
+  backend1:
+    build: .
+    container_name: flask-backend-1
+    environment:
+      - SERVICE_MODE=backend
+      - SERVICE_ID=1
+    restart: unless-stopped
+
+  backend2:
+    build: .
+    container_name: flask-backend-2
+    environment:
+      - SERVICE_MODE=backend
+      - SERVICE_ID=2
+    restart: unless-stopped
+
+  backend3:
+    build: .
+    container_name: flask-backend-3
+    environment:
+      - SERVICE_MODE=backend
+      - SERVICE_ID=3
+    restart: unless-stopped
